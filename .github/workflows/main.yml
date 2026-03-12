@@ -1,0 +1,27 @@
+name: Run Colab Script
+on:
+  push:
+    branches: [ "main" ] # Runs whenever you save from Colab to the 'main' branch
+
+jobs:
+  run-notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 # Gets your code
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install dependencies
+        run: |
+          pip install google-generativeai ipython nbconvert
+          
+      - name: Convert and Run
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          # Converts your notebook to a regular .py script and runs it
+          jupyter nbconvert --to script *.ipynb
+          python *.py
